@@ -1,27 +1,119 @@
-﻿@model GuarderiaApp.Models.Niño
+﻿@model GuarderiaApp.Models.NiñoConPersonasViewModel
 
-<h2>Crear Niño</h2>
+<h2>Ingresar un Niño</h2>
 
 <form asp-action="Create" method="post">
+    <!-- Información del Niño -->
     <div class="form-group">
-        <label asp-for="NumeroMatricula"></label>
-        <input asp-for="NumeroMatricula" class="form-control" />
-        <span asp-validation-for="NumeroMatricula" class="text-danger"></span>
+        <label asp-for="Niño.NumeroMatricula"></label>
+        <input asp-for="Niño.NumeroMatricula" class="form-control" />
+        <span asp-validation-for="Niño.NumeroMatricula" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" class="form-control" />
-        <span asp-validation-for="Nombre" class="text-danger"></span>
+        <label asp-for="Niño.Nombre"></label>
+        <input asp-for="Niño.Nombre" class="form-control" />
+        <span asp-validation-for="Niño.Nombre" class="text-danger"></span>
     </div>
+
+    <!-- Alergias -->
     <div class="form-group">
-        <label asp-for="FechaNacimiento"></label>
-        <input asp-for="FechaNacimiento" type="date" class="form-control" />
-        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
+        <label asp-for="Niño.Alergias"></label>
+        <textarea asp-for="Niño.Alergias" class="form-control" placeholder="Lista de alergias del niño (separadas por comas)"></textarea>
+        <span asp-validation-for="Niño.Alergias" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="FechaIngreso"></label>
-        <input asp-for="FechaIngreso" type="date" class="form-control" />
-        <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+        <label asp-for="Niño.FechaNacimiento"></label>
+        <input asp-for="Niño.FechaNacimiento" type="date" class="form-control" />
+        <span asp-validation-for="Niño.FechaNacimiento" class="text-danger"></span>
     </div>
+
+    <div class="form-group">
+        <label asp-for="Niño.FechaIngreso"></label>
+        <input asp-for="Niño.FechaIngreso" type="date" class="form-control" />
+        <span asp-validation-for="Niño.FechaIngreso" class="text-danger"></span>
+    </div>
+
+    <!-- Sección para Personas Autorizadas -->
+    <h4>Personas Autorizadas</h4>
+    <div id="personas-autorizadas">
+        @for (int i = 0; i < Model.PersonasAutorizadas.Count; i++)
+        {
+            <div class="persona-autorizada-group">
+                <div class="form-group">
+                    <label asp-for="PersonasAutorizadas[i].Cedula"></label>
+                    <input asp-for="PersonasAutorizadas[i].Cedula" class="form-control" />
+                    <span asp-validation-for="PersonasAutorizadas[i].Cedula" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PersonasAutorizadas[i].Nombre"></label>
+                    <input asp-for="PersonasAutorizadas[i].Nombre" class="form-control" />
+                    <span asp-validation-for="PersonasAutorizadas[i].Nombre" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PersonasAutorizadas[i].Direccion"></label>
+                    <input asp-for="PersonasAutorizadas[i].Direccion" class="form-control" />
+                    <span asp-validation-for="PersonasAutorizadas[i].Direccion" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PersonasAutorizadas[i].Telefono"></label>
+                    <input asp-for="PersonasAutorizadas[i].Telefono" class="form-control" />
+                    <span asp-validation-for="PersonasAutorizadas[i].Telefono" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PersonasAutorizadas[i].Relacion"></label>
+                    <input asp-for="PersonasAutorizadas[i].Relacion" class="form-control" placeholder="Madre, Padre, Tío, etc." />
+                    <span asp-validation-for="PersonasAutorizadas[i].Relacion" class="text-danger"></span>
+                </div>
+                <hr />
+            </div>
+        }
+    </div>
+
+    <button type="button" id="agregar-persona" class="btn btn-secondary">Agregar otra persona</button>
     <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var index = @Model.PersonasAutorizadas.Count;
+
+            $("#agregar-persona").click(function() {
+                var html = `
+                <div class="persona-autorizada-group">
+                    <div class="form-group">
+                        <label for="PersonasAutorizadas_${index}__Cedula">Cédula</label>
+                        <input type="text" class="form-control" name="PersonasAutorizadas[${index}].Cedula" id="PersonasAutorizadas_${index}__Cedula" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PersonasAutorizadas_${index}__Nombre">Nombre</label>
+                        <input type="text" class="form-control" name="PersonasAutorizadas[${index}].Nombre" id="PersonasAutorizadas_${index}__Nombre" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PersonasAutorizadas_${index}__Direccion">Dirección</label>
+                        <input type="text" class="form-control" name="PersonasAutorizadas[${index}].Direccion" id="PersonasAutorizadas_${index}__Direccion" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PersonasAutorizadas_${index}__Telefono">Teléfono</label>
+                        <input type="text" class="form-control" name="PersonasAutorizadas[${index}].Telefono" id="PersonasAutorizadas_${index}__Telefono" />
+                    </div>
+                    <div class="form-group">
+                        <label for="PersonasAutorizadas_${index}__Relacion">Relación</label>
+                        <input type="text" class="form-control" name="PersonasAutorizadas[${index}].Relacion" id="PersonasAutorizadas_${index}__Relacion" placeholder="Madre, Padre, Tío, etc." />
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remover-persona">Eliminar</button>
+                    <hr />
+                </div>`;
+
+                $("#personas-autorizadas").append(html);
+                index++;
+            });
+
+            $(document).on("click", ".remover-persona", function() {
+                $(this).closest(".persona-autorizada-group").remove();
+            });
+        });
+    </script>
+}
