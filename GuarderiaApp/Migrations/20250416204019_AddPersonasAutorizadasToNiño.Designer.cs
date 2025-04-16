@@ -4,6 +4,7 @@ using GuarderiaApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuarderiaApp.Migrations
 {
     [DbContext(typeof(GuarderiaDbContext))]
-    partial class GuarderiaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416204019_AddPersonasAutorizadasToNiño")]
+    partial class AddPersonasAutorizadasToNiño
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

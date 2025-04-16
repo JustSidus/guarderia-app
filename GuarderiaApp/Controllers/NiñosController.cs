@@ -1,7 +1,9 @@
-﻿using GuarderiaApp.Data;
+using GuarderiaApp.Data;
 using GuarderiaApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GuarderiaApp.Controllers
 {
@@ -14,35 +16,62 @@ namespace GuarderiaApp.Controllers
             _context = context;
         }
 
-        // GET: Niños
+        // Acción para listar los niños
         public async Task<IActionResult> Index()
         {
-            var niños = await _context.Niños.ToListAsync();
+            var niños = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .ToListAsync();
             return View(niños);
         }
 
-        // GET: Niños/Create
+        // GET: Niños/Create - Mostrar formulario
         public IActionResult Create()
         {
-            return View();
+            var model = new NiñoConPersonasViewModel
+            {
+                Niño = new Niño(),
+                PersonasAutorizadas = new List<PersonaAutorizada> { new PersonaAutorizada() }
+            };
+            return View(model);
         }
 
-        // POST: Niños/Create
+        // POST: Niños/Create - Procesar formulario
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Niño niño)
+        public async Task<IActionResult> Create(NiñoConPersonasViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(niño);
-                await _context.SaveChangesAsync();
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    _context.Niños.Add(model.Niño);
+                    await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "¡Niño registrado exitosamente!";
+                    foreach (var persona in model.PersonasAutorizadas)
+                    {
+                        if (!string.IsNullOrWhiteSpace(persona.Nombre))
+                        {
+                            persona.Niños = new List<Niño> { model.Niño };
+                            _context.PersonasAutorizadas.Add(persona);
+                        }
+                    }
 
-                return RedirectToAction(nameof(Index)); // Redirige para limpiar el formulario
-                
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    TempData["SuccessMessage"] = "¡Niño registrado exitosamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    ModelState.AddModelError("", "Ocurrió un error al guardar los datos.");
+                }
             }
-            return View(niño);
+
+            return View(model);
         }
 
         // GET: Niños/Details/5
@@ -50,73 +79,13 @@ namespace GuarderiaApp.Controllers
         {
             if (id == null) return NotFound();
 
-            var niño = await _context.Niños.FirstOrDefaultAsync(m => m.Id == id);
+            var niño = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (niño == null) return NotFound();
 
             return View(niño);
         }
-
-        // GET: Niños/Edit/5 Editar carajitos
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var niño = await _context.Niños.FindAsync(id);
-            if (niño == null) return NotFound();
-
-            return View(niño);
-        }
-
-        // POST: Niños/Edit/5 Editar carajitos
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Niño niño)
-        {
-            if (id != niño.Id) return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(niño);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Niños.Any(e => e.Id == niño.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(niño);
-        }
-
-        // GET: Niños/Delete/5 Borrar carajitos
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-
-            var niño = await _context.Niños.FirstOrDefaultAsync(m => m.Id == id);
-            if (niño == null) return NotFound();
-
-            return View(niño);
-        }
-
-        // POST: Niños/Delete/5 Borrar carajitos
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var niño = await _context.Niños.FindAsync(id);
-            if (niño != null)
-            {
-                _context.Niños.Remove(niño);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
     }
 }

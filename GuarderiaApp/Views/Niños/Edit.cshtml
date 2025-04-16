@@ -14,6 +14,11 @@
         <input type="text" class="form-control" id="Nombre" name="Nombre" value="@Model.Nombre" required />
     </div>
     <div class="form-group">
+        <label asp-for="Alergias"></label>
+        <textarea asp-for="Alergias" class="form-control" placeholder="Lista de alergias del niño (separadas por comas)"></textarea>
+        <span asp-validation-for="Alergias" class="text-danger"></span>
+    </div>
+    <div class="form-group">
         <label for="FechaNacimiento">Fecha de Nacimiento</label>
         <input type="date" class="form-control" id="FechaNacimiento" name="FechaNacimiento" value="@Model.FechaNacimiento.ToString("yyyy-MM-dd")" required />
     </div>
