@@ -1,16 +1,19 @@
 ﻿@model IEnumerable<GuarderiaApp.Models.Niño>
 
-<h2>Lista de Niños</h2>
+@{
+    ViewData["Title"] = "Lista de Niños";
+}
 
-<a asp-action="Create" class="btn btn-success mb-3">Crear Niño</a>
+<h2>Lista de Niños</h2>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Numero Matrícula</th>
+            <th>Matrícula</th>
             <th>Nombre</th>
             <th>Fecha de Nacimiento</th>
             <th>Fecha de Ingreso</th>
+            <th>Alergias</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -22,10 +25,9 @@
                 <td>@niño.Nombre</td>
                 <td>@niño.FechaNacimiento.ToShortDateString()</td>
                 <td>@niño.FechaIngreso.ToShortDateString()</td>
+                <td>@niño.Alergias</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@niño.Id" class="btn btn-warning btn-sm">Editar</a>
-                    <a asp-action="Details" asp-route-id="@niño.Id" class="btn btn-info btn-sm">Detalles</a>
-                    <a asp-action="Delete" asp-route-id="@niño.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                    <a asp-action="Details" asp-route-id="@niño.Id" class="btn btn-info btn-sm">Ver Detalles</a>
                 </td>
             </tr>
         }

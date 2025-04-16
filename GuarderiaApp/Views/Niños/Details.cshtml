@@ -1,20 +1,45 @@
 ﻿@model GuarderiaApp.Models.Niño
 
-@{
-    ViewData["Title"] = "Detalles del Niño";
-}
+<h2>Detalles del Niño</h2>
 
-<h2>@ViewData["Title"]</h2>
-
-<div class="card">
-    <div class="card-body">
-        <h4 class="card-title">@Model.Nombre</h4>
-        <p class="card-text"><strong>Número de Matrícula:</strong> @Model.NumeroMatricula</p>
-        <p class="card-text"><strong>Fecha de Nacimiento:</strong> @Model.FechaNacimiento.ToShortDateString()</p>
-        <p class="card-text"><strong>Fecha de Ingreso:</strong> @Model.FechaIngreso.ToShortDateString()</p>
-    </div>
+<div>
+    <p><strong>Matrícula:</strong> @Model.NumeroMatricula</p>
+    <p><strong>Nombre:</strong> @Model.Nombre</p>
+    <p><strong>Fecha de nacimiento:</strong> @Model.FechaNacimiento.ToShortDateString()</p>
+    <p><strong>Fecha de ingreso:</strong> @Model.FechaIngreso.ToShortDateString()</p>
+    <p><strong>Alergias:</strong> @Model.Alergias</p>
 </div>
 
-<br />
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
-<a asp-action="Index" class="btn btn-secondary">Volver</a>
+<h4>Personas Autorizadas</h4>
+@if (Model.PersonasAutorizadas != null && Model.PersonasAutorizadas.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Teléfono</th>
+                <th>Relación</th>
+                <th>Responsable Pago</th>
+                <th>Cuenta Bancaria</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.PersonasAutorizadas)
+            {
+                <tr>
+                    <td>@p.Nombre</td>
+                    <td>@p.Cedula</td>
+                    <td>@p.Telefono</td>
+                    <td>@p.Relacion</td>
+                    <td>@(p.EsResponsablePago ? "Sí" : "No")</td>
+                    <td>@(p.EsResponsablePago ? p.CuentaBancaria : "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay personas autorizadas registradas.</p>
+}

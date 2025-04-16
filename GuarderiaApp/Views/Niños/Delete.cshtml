@@ -4,20 +4,15 @@
     ViewData["Title"] = "Eliminar Niño";
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>¿Estás seguro que deseas eliminar este niño?</h2>
 
-<h3>¿Estás seguro de que deseas eliminar este niño?</h3>
-
-<div class="card mt-3 mb-3">
-    <div class="card-body">
-        <h4 class="card-title">@Model.Nombre</h4>
-        <p class="card-text"><strong>Número de Matrícula:</strong> @Model.NumeroMatricula</p>
-        <p class="card-text"><strong>Fecha de Nacimiento:</strong> @Model.FechaNacimiento.ToShortDateString()</p>
-        <p class="card-text"><strong>Fecha de Ingreso:</strong> @Model.FechaIngreso.ToShortDateString()</p>
-    </div>
+<div>
+    <h4>@Model.Nombre (@Model.NumeroMatricula)</h4>
+    <p>Fecha de ingreso: @Model.FechaIngreso.ToShortDateString()</p>
+    <p>Alergias: @Model.Alergias</p>
 </div>
 
-<form asp-action="DeleteConfirmed" method="post">
+<form asp-action="Delete">
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Eliminar</button>
     <a asp-action="Index" class="btn btn-secondary">Cancelar</a>

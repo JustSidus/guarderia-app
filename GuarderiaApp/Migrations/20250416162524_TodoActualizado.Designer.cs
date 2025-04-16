@@ -4,6 +4,7 @@ using GuarderiaApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuarderiaApp.Migrations
 {
     [DbContext(typeof(GuarderiaDbContext))]
-    partial class GuarderiaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416162524_TodoActualizado")]
+    partial class TodoActualizado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -120,29 +123,7 @@ namespace GuarderiaApp.Migrations
                     b.ToTable("Niños");
                 });
 
-            modelBuilder.Entity("GuarderiaApp.Models.Plato", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("MenuId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("Platos");
-                });
-
-            modelBuilder.Entity("PersonaAutorizada", b =>
+            modelBuilder.Entity("GuarderiaApp.Models.PersonaAutorizada", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -187,6 +168,28 @@ namespace GuarderiaApp.Migrations
                     b.ToTable("PersonasAutorizadas");
                 });
 
+            modelBuilder.Entity("GuarderiaApp.Models.Plato", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("MenuId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuId");
+
+                    b.ToTable("Platos");
+                });
+
             modelBuilder.Entity("GuarderiaApp.Models.Ingrediente", b =>
                 {
                     b.HasOne("GuarderiaApp.Models.Plato", null)
@@ -213,14 +216,7 @@ namespace GuarderiaApp.Migrations
                     b.Navigation("Niño");
                 });
 
-            modelBuilder.Entity("GuarderiaApp.Models.Plato", b =>
-                {
-                    b.HasOne("GuarderiaApp.Models.Menu", null)
-                        .WithMany("Platos")
-                        .HasForeignKey("MenuId");
-                });
-
-            modelBuilder.Entity("PersonaAutorizada", b =>
+            modelBuilder.Entity("GuarderiaApp.Models.PersonaAutorizada", b =>
                 {
                     b.HasOne("GuarderiaApp.Models.Niño", "Niño")
                         .WithMany("PersonasAutorizadas")
@@ -229,6 +225,13 @@ namespace GuarderiaApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Niño");
+                });
+
+            modelBuilder.Entity("GuarderiaApp.Models.Plato", b =>
+                {
+                    b.HasOne("GuarderiaApp.Models.Menu", null)
+                        .WithMany("Platos")
+                        .HasForeignKey("MenuId");
                 });
 
             modelBuilder.Entity("GuarderiaApp.Models.Menu", b =>

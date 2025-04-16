@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using GuarderiaApp.Models;
+﻿using GuarderiaApp.Models;
 
-namespace GuarderiaApp.Models
+public class PersonaAutorizada
 {
-    public class PersonaAutorizada
-    {
-        public int Id { get; set; }
-        public string Cedula { get; set; } = string.Empty;
-        public string Nombre { get; set; } = string.Empty;
-        public string Direccion { get; set; } = string.Empty;
-        public string Telefono { get; set; } = string.Empty;
-        public string Relacion { get; set; } = string.Empty;  // Ejemplo: Madre, Padre, Tío, etc.
+    public int Id { get; set; }
+    public string Cedula { get; set; }
+    public string Nombre { get; set; }
+    public string Direccion { get; set; }
+    public string Telefono { get; set; }
+    public string Relacion { get; set; }
+    public string CuentaBancaria { get; set; }
+    public bool EsResponsablePago { get; set; }
 
-        public List<Niño> Niños { get; set; } = new List<Niño>();
-    }
+    public int NiñoId { get; set; }
+    public Niño Niño { get; set; }  // Importante: no eliminar esto
 }

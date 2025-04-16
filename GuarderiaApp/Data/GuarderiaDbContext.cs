@@ -18,11 +18,20 @@ namespace GuarderiaApp.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Relación entre Niño y PersonasAutorizadas
+            modelBuilder.Entity<PersonaAutorizada>()
+                .HasOne(pa => pa.Niño)
+                .WithMany(n => n.PersonasAutorizadas)
+                .HasForeignKey(pa => pa.NiñoId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relación entre MenúConsumido y Niño
             modelBuilder.Entity<MenuConsumido>()
                 .HasOne(mc => mc.Niño)
-                .WithMany(n => n.MenusConsumidos) 
+                .WithMany(n => n.MenusConsumidos)
                 .HasForeignKey(mc => mc.NiñoId);
 
+            // Relación entre MenúConsumido y Menú
             modelBuilder.Entity<MenuConsumido>()
                 .HasOne(mc => mc.Menu)
                 .WithMany()

@@ -1,6 +1,7 @@
 ﻿using GuarderiaApp.Data;
 using GuarderiaApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace GuarderiaApp.Controllers
@@ -17,7 +18,9 @@ namespace GuarderiaApp.Controllers
         // GET: Niños
         public async Task<IActionResult> Index()
         {
-            var niños = await _context.Niños.ToListAsync();
+            var niños = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .ToListAsync();
             return View(niños);
         }
 
@@ -30,40 +33,60 @@ namespace GuarderiaApp.Controllers
         // POST: Niños/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Niño niño)
+        public async Task<IActionResult> Create([Bind("NumeroMatricula,Nombre,FechaNacimiento,FechaIngreso,FechaBaja,Alergias,ResponsablePagoId,PersonasAutorizadas")] Niño niño)
         {
             if (ModelState.IsValid)
             {
+                // Relacionar personas autorizadas con el niño
+                if (niño.PersonasAutorizadas != null && niño.PersonasAutorizadas.Count > 0)
+                {
+                    foreach (var persona in niño.PersonasAutorizadas)
+                    {
+                        persona.Niño = niño;
+                    }
+                }
+
                 _context.Add(niño);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            // Si hay error, recargar responsables disponibles por si la vista los necesita
+            ViewData["ResponsablePagoId"] = new SelectList(_context.Responsables, "Id", "Nombre", niño.ResponsablePagoId);
             return View(niño);
         }
+
+
 
         // GET: Niños/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            var niño = await _context.Niños.FirstOrDefaultAsync(m => m.Id == id);
+            var niño = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (niño == null) return NotFound();
 
             return View(niño);
         }
 
-        // GET: Niños/Edit/5 Editar carajitos
+        // GET: Niños/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
-            var niño = await _context.Niños.FindAsync(id);
+            var niño = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .FirstOrDefaultAsync(n => n.Id == id);
+
             if (niño == null) return NotFound();
 
             return View(niño);
         }
 
-        // POST: Niños/Edit/5 Editar carajitos
+        // POST: Niños/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Niño niño)
@@ -74,6 +97,19 @@ namespace GuarderiaApp.Controllers
             {
                 try
                 {
+                    // Eliminar personas actuales y volver a agregarlas para evitar conflictos
+                    var personasExistentes = _context.PersonasAutorizadas.Where(p => p.NiñoId == niño.Id);
+                    _context.PersonasAutorizadas.RemoveRange(personasExistentes);
+
+                    if (niño.PersonasAutorizadas != null)
+                    {
+                        foreach (var persona in niño.PersonasAutorizadas)
+                        {
+                            persona.NiñoId = niño.Id;
+                            _context.PersonasAutorizadas.Add(persona);
+                        }
+                    }
+
                     _context.Update(niño);
                     await _context.SaveChangesAsync();
                 }
@@ -89,25 +125,32 @@ namespace GuarderiaApp.Controllers
             return View(niño);
         }
 
-        // GET: Niños/Delete/5 Borrar carajitos
+        // GET: Niños/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
-            var niño = await _context.Niños.FirstOrDefaultAsync(m => m.Id == id);
+            var niño = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (niño == null) return NotFound();
 
             return View(niño);
         }
 
-        // POST: Niños/Delete/5 Borrar carajitos
+        // POST: Niños/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var niño = await _context.Niños.FindAsync(id);
+            var niño = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .FirstOrDefaultAsync(n => n.Id == id);
+
             if (niño != null)
             {
+                _context.PersonasAutorizadas.RemoveRange(niño.PersonasAutorizadas);
                 _context.Niños.Remove(niño);
                 await _context.SaveChangesAsync();
             }

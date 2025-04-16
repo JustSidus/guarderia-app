@@ -4,26 +4,91 @@
     ViewData["Title"] = "Editar Niño";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<h3>Editar Niño</h3>
+<h2>Editar Niño</h2>
 
 <form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
     <div class="form-group">
-        <label for="Nombre">Nombre</label>
-        <input type="text" class="form-control" id="Nombre" name="Nombre" value="@Model.Nombre" required />
+        <label asp-for="Nombre" class="control-label"></label>
+        <input asp-for="Nombre" class="form-control" />
+        <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label for="FechaNacimiento">Fecha de Nacimiento</label>
-        <input type="date" class="form-control" id="FechaNacimiento" name="FechaNacimiento" value="@Model.FechaNacimiento.ToString("yyyy-MM-dd")" required />
+        <label asp-for="NumeroMatricula" class="control-label"></label>
+        <input asp-for="NumeroMatricula" class="form-control" />
+        <span asp-validation-for="NumeroMatricula" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label for="FechaIngreso">Fecha de Ingreso</label>
-        <input type="date" class="form-control" id="FechaIngreso" name="FechaIngreso" value="@Model.FechaIngreso.ToString("yyyy-MM-dd")" required />
+        <label asp-for="FechaNacimiento" class="control-label"></label>
+        <input asp-for="FechaNacimiento" class="form-control" type="date" />
+        <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label for="NumeroMatricula">Número de Matrícula</label>
-        <input type="number" class="form-control" id="NumeroMatricula" name="NumeroMatricula" value="@Model.NumeroMatricula" required />
+        <label asp-for="FechaIngreso" class="control-label"></label>
+        <input asp-for="FechaIngreso" class="form-control" type="date" />
+        <span asp-validation-for="FechaIngreso" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+
+    <div class="form-group">
+        <label asp-for="FechaBaja" class="control-label"></label>
+        <input asp-for="FechaBaja" class="form-control" type="date" />
+        <span asp-validation-for="FechaBaja" class="text-danger"></span>
+    </div>
+
+    <h4>Personas Autorizadas</h4>
+    <div id="personas-container">
+        @for (int i = 0; i < Model.PersonasAutorizadas.Count; i++)
+        {
+            <div class="persona-autorizada">
+                <input type="hidden" name="PersonasAutorizadas[@i].Id" value="@Model.PersonasAutorizadas[i].Id" />
+
+                <div class="form-group">
+                    <label>Cédula</label>
+                    <input name="PersonasAutorizadas[@i].Cedula" class="form-control" value="@Model.PersonasAutorizadas[i].Cedula" />
+                </div>
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input name="PersonasAutorizadas[@i].Nombre" class="form-control" value="@Model.PersonasAutorizadas[i].Nombre" />
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input name="PersonasAutorizadas[@i].Direccion" class="form-control" value="@Model.PersonasAutorizadas[i].Direccion" />
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input name="PersonasAutorizadas[@i].Telefono" class="form-control" value="@Model.PersonasAutorizadas[i].Telefono" />
+                </div>
+                <div class="form-group">
+                    <label>Relación</label>
+                    <input name="PersonasAutorizadas[@i].Relacion" class="form-control" value="@Model.PersonasAutorizadas[i].Relacion" />
+                </div>
+                <div class="form-group form-check">
+                    <input type="checkbox" name="PersonasAutorizadas[@i].EsResponsablePago" class="form-check-input" @(Model.PersonasAutorizadas[i].EsResponsablePago ? "checked" : "") />
+                    <label class="form-check-label">¿Es responsable de pago?</label>
+                </div>
+                <div class="form-group">
+                    <label>Número de cuenta</label>
+                    <input name="PersonasAutorizadas[@i].NumeroCuenta" class="form-control" value="@Model.PersonasAutorizadas[i].CuentaBancaria" />
+                </div>
+                <hr />
+            </div>
+        }
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Alergias" class="control-label">Alergias (separadas por coma)</label>
+        <input asp-for="Alergias" class="form-control" />
+        <span asp-validation-for="Alergias" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

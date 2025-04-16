@@ -1,27 +1,135 @@
 ﻿@model GuarderiaApp.Models.Niño
 
-<h2>Crear Niño</h2>
+@{
+    ViewData["Title"] = "Agregar Niño";
+}
+
+<h2>Agregar Niño</h2>
 
 <form asp-action="Create" method="post">
+
+    @Html.ValidationSummary(true) <!-- Esto muestra los errores de validación -->
+
     <div class="form-group">
-        <label asp-for="NumeroMatricula"></label>
-        <input asp-for="NumeroMatricula" class="form-control" />
-        <span asp-validation-for="NumeroMatricula" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Nombre"></label>
+        <label asp-for="Nombre" class="control-label"></label>
         <input asp-for="Nombre" class="form-control" />
         <span asp-validation-for="Nombre" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="FechaNacimiento"></label>
-        <input asp-for="FechaNacimiento" type="date" class="form-control" />
+        <label asp-for="NumeroMatricula" class="control-label"></label>
+        <input asp-for="NumeroMatricula" class="form-control" />
+        <span asp-validation-for="NumeroMatricula" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FechaNacimiento" class="control-label"></label>
+        <input asp-for="FechaNacimiento" class="form-control" type="date" />
         <span asp-validation-for="FechaNacimiento" class="text-danger"></span>
     </div>
+
     <div class="form-group">
-        <label asp-for="FechaIngreso"></label>
-        <input asp-for="FechaIngreso" type="date" class="form-control" />
+        <label asp-for="FechaIngreso" class="control-label"></label>
+        <input asp-for="FechaIngreso" class="form-control" type="date" />
         <span asp-validation-for="FechaIngreso" class="text-danger"></span>
     </div>
+
+    <div class="form-group">
+        <label asp-for="FechaBaja" class="control-label"></label>
+        <input asp-for="FechaBaja" class="form-control" type="date" />
+        <span asp-validation-for="FechaBaja" class="text-danger"></span>
+    </div>
+
+    <h4>Personas Autorizadas</h4>
+    <div id="personas-container">
+        <div class="persona-autorizada ms-4 border p-3 rounded">
+            <div class="form-group">
+                <label>Cédula</label>
+                <input name="PersonasAutorizadas[0].Cedula" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Nombre</label>
+                <input name="PersonasAutorizadas[0].Nombre" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Dirección</label>
+                <input name="PersonasAutorizadas[0].Direccion" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input name="PersonasAutorizadas[0].Telefono" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Relación con el niño</label>
+                <input name="PersonasAutorizadas[0].Relacion" class="form-control" />
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" name="PersonasAutorizadas[0].EsResponsablePago" class="form-check-input responsable-pago-checkbox" data-index="0" />
+                <label class="form-check-label">¿Es responsable de pago?</label>
+            </div>
+            <div class="form-group numero-cuenta" id="numeroCuenta0" style="display:none;">
+                <label>Número de cuenta (si es responsable)</label>
+                <input name="PersonasAutorizadas[0].CuentaBancaria" class="form-control" />
+            </div>
+            <button type="button" class="btn btn-danger mt-2" onclick="eliminarPersona(this)">Eliminar</button>
+            <hr />
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary mb-3" onclick="agregarPersona()">Agregar otra persona</button>
+
+    <div class="form-group">
+        <label asp-for="Alergias" class="control-label">Alergias (separadas por coma)</label>
+        <input asp-for="Alergias" class="form-control" placeholder="Ej: Maní, Leche, Gluten" />
+        <span asp-validation-for="Alergias" class="text-danger"></span>
+    </div>
+
     <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        let personaIndex = 1;
+
+        function agregarPersona() {
+            const container = document.getElementById('personas-container');
+            const nuevaPersona = container.firstElementChild.cloneNode(true);
+            const inputs = nuevaPersona.querySelectorAll('input');
+
+            nuevaPersona.querySelector('.numero-cuenta').style.display = 'none';
+
+            inputs.forEach(input => {
+                if (input.name.includes('PersonasAutorizadas')) {
+                    input.name = input.name.replace(/\d+/, personaIndex);
+                    input.value = '';
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                        input.setAttribute('data-index', personaIndex);
+                    }
+                }
+            });
+
+            nuevaPersona.querySelector('.numero-cuenta').id = `numeroCuenta${personaIndex}`;
+
+            container.appendChild(nuevaPersona);
+            personaIndex++;
+        }
+
+        function eliminarPersona(button) {
+            const container = document.getElementById('personas-container');
+            if (container.children.length > 1) {
+                button.closest('.persona-autorizada').remove();
+            }
+        }
+
+        document.addEventListener('change', function (event) {
+            if (event.target.classList.contains('responsable-pago-checkbox')) {
+                const index = event.target.getAttribute('data-index');
+                const cuentaDiv = document.getElementById(`numeroCuenta${index}`);
+                cuentaDiv.style.display = event.target.checked ? 'block' : 'none';
+            }
+        });
+    </script>
+}
