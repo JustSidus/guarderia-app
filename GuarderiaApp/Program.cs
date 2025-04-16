@@ -1,5 +1,7 @@
 using GuarderiaApp.Data;
 using Microsoft.EntityFrameworkCore;
+using GuarderiaApp;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +24,8 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-string x = "Hola"; 
-
+string x = "Hola";
+Console.WriteLine(x);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

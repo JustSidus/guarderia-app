@@ -36,7 +36,11 @@ namespace GuarderiaApp.Controllers
             {
                 _context.Add(niño);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                TempData["SuccessMessage"] = "¡Niño registrado exitosamente!";
+
+                return RedirectToAction(nameof(Index)); // Redirige para limpiar el formulario
+                
             }
             return View(niño);
         }
@@ -113,5 +117,6 @@ namespace GuarderiaApp.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

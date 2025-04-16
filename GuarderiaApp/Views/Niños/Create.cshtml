@@ -1,5 +1,14 @@
 ﻿@model GuarderiaApp.Models.Niño
 
+@* Mensaje de éxito al guardar *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <h2>Crear Niño</h2>
 
 <form asp-action="Create" method="post">
@@ -25,3 +34,4 @@
     </div>
     <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
+
