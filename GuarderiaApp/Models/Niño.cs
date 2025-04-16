@@ -8,7 +8,6 @@ namespace GuarderiaApp.Models
         public int Id { get; set; }
         public string NumeroMatricula { get; set; } = string.Empty;
         public string Nombre { get; set; } = string.Empty;
-        public string Alergias { get; set; } = string.Empty;
         public DateTime FechaNacimiento { get; set; } = new DateTime();
         public DateTime FechaIngreso { get; set; } = new DateTime();
         public DateTime? FechaBaja { get; set; } = null;
