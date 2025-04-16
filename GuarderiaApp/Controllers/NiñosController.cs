@@ -1,4 +1,4 @@
-﻿using GuarderiaApp.Data;
+using GuarderiaApp.Data;
 using GuarderiaApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +20,12 @@ namespace GuarderiaApp.Controllers
         public async Task<IActionResult> Index()
         {
             var niños = await _context.Niños
-                .Include(n => n.PersonasAutorizadas) // Incluir personas autorizadas
+                .Include(n => n.PersonasAutorizadas)
                 .ToListAsync();
             return View(niños);
         }
 
-        // Acción para mostrar el formulario de creación
+        // GET: Niños/Create - Mostrar formulario
         public IActionResult Create()
         {
             var model = new NiñoConPersonasViewModel
@@ -36,7 +36,7 @@ namespace GuarderiaApp.Controllers
             return View(model);
         }
 
-        // Acción para procesar la creación de un niño con personas autorizadas
+        // POST: Niños/Create - Procesar formulario
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(NiñoConPersonasViewModel model)
@@ -46,22 +46,22 @@ namespace GuarderiaApp.Controllers
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
-                    // Guardar el niño primero
                     _context.Niños.Add(model.Niño);
                     await _context.SaveChangesAsync();
 
-                    // Guardar cada persona autorizada y establecer la relación
                     foreach (var persona in model.PersonasAutorizadas)
                     {
-                        if (!string.IsNullOrWhiteSpace(persona.Nombre)) // Solo guardar si tiene datos
+                        if (!string.IsNullOrWhiteSpace(persona.Nombre))
                         {
                             persona.Niños = new List<Niño> { model.Niño };
                             _context.PersonasAutorizadas.Add(persona);
                         }
                     }
-                    await _context.SaveChangesAsync();
 
+                    await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
+
+                    TempData["SuccessMessage"] = "¡Niño registrado exitosamente!";
                     return RedirectToAction(nameof(Index));
                 }
                 catch
@@ -71,8 +71,21 @@ namespace GuarderiaApp.Controllers
                 }
             }
 
-            // Si hay errores, volver a mostrar el formulario
             return View(model);
+        }
+
+        // GET: Niños/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var niño = await _context.Niños
+                .Include(n => n.PersonasAutorizadas)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (niño == null) return NotFound();
+
+            return View(niño);
         }
     }
 }

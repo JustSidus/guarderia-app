@@ -1,6 +1,15 @@
-﻿@model GuarderiaApp.Models.NiñoConPersonasViewModel
+@model GuarderiaApp.Models.NiñoConPersonasViewModel
 
-<h2>Ingresar un Niño</h2>
+@* Mensaje de éxito al guardar *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h2>Crear Niño</h2>
 
 <form asp-action="Create" method="post">
     <!-- Información del Niño -->
@@ -77,10 +86,10 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var index = @Model.PersonasAutorizadas.Count;
 
-            $("#agregar-persona").click(function() {
+            $("#agregar-persona").click(function () {
                 var html = `
                 <div class="persona-autorizada-group">
                     <div class="form-group">
@@ -106,12 +115,11 @@
                     <button type="button" class="btn btn-danger btn-sm remover-persona">Eliminar</button>
                     <hr />
                 </div>`;
-
                 $("#personas-autorizadas").append(html);
                 index++;
             });
 
-            $(document).on("click", ".remover-persona", function() {
+            $(document).on("click", ".remover-persona", function () {
                 $(this).closest(".persona-autorizada-group").remove();
             });
         });
